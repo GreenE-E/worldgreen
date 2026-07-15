@@ -35,7 +35,28 @@
   .home-intro{text-align:center; padding:32px 8px 40px;}
   .home-sub{font-size:14px; color:var(--sub); font-weight:500; margin-bottom:8px;}
   .home-title{font-size:19px; font-weight:800; color:var(--ink); line-height:1.5; letter-spacing:-.02em;}
+  .sns-row{display:flex; justify-content:center; gap:22px; padding:18px 0 26px;}
+  .sns-item{display:flex; flex-direction:column; align-items:center; gap:6px; text-decoration:none;}
+  .sns-icon{width:50px; height:50px; border-radius:15px; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,.12);}
+  .sns-icon svg{width:24px; height:24px;}
+  .sns-icon.yt{background:#FF0000;}
+  .sns-icon.ig{background:linear-gradient(135deg,#f9ce34 0%,#ee2a7b 50%,#6228d7 100%);}
+  .sns-icon.blog{background:#03C75A;}
+  .sns-icon.blog span{color:#fff; font-size:13px; font-weight:800; font-style:italic; letter-spacing:-.02em;}
+  .sns-label{font-size:11px; color:var(--sub); font-weight:600;}
   .home-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; padding-bottom:24px;}
+  .channels-section{padding:8px 16px 26px;}
+  .channels-title{font-size:12px; font-weight:700; color:var(--sub); letter-spacing:.06em; text-align:center; margin-bottom:14px; text-transform:uppercase;}
+  .channels-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px;}
+  .channel-item{display:flex; align-items:center; justify-content:center; padding:16px 6px; background:var(--card); border:1px solid var(--line); border-radius:10px; text-decoration:none;}
+  .channel-item:last-child{grid-column:2;}
+  .ch-naver{color:#03C75A; font-weight:900; font-size:12px;}
+  .ch-coupang{font-size:16px; font-weight:900; color:#C00000; letter-spacing:-1px;}
+  .ch-ali{font-size:12px; font-weight:900; color:#FF6A00;}
+  .ch-kakao{font-size:12px; font-weight:900; color:#3A1D1D; background:#FEE500; padding:3px 8px; border-radius:4px;}
+  .ch-auction{font-size:14px; font-weight:900; color:#CE0000; letter-spacing:-0.5px;}
+  .ch-gmarket{font-size:13px; font-weight:900; color:#04A148;}
+  .ch-11st{font-size:15px; font-weight:900; color:#F03E21;}
   .home-card{background:var(--card); border-radius:10px; padding:16px 14px; border:1px solid #cfcfcc;}
   .home-card-t{font-size:15px; font-weight:800; color:var(--ink); margin-bottom:6px;}
   .home-card-s{font-size:12px; color:var(--sub); line-height:1.5;}
@@ -101,6 +122,20 @@
         <div class="home-sub">매트, 청소 용품, 위생 솔루션까지 —</div>
         <div class="home-title">World Green은 가치를 높이는<br>프리미엄 제품을 직접 생산하고 공급합니다.</div>
       </div>
+      <div class="sns-row">
+        <a href="https://www.youtube.com/@world_green" target="_blank" class="sns-item">
+          <div class="sns-icon yt"><svg viewBox="0 0 24 24" fill="white"><path d="M21.6 7.2s-.2-1.5-.8-2.2c-.8-.8-1.7-.8-2.1-.9C15.9 4 12 4 12 4h0s-3.9 0-6.7.1c-.4.1-1.3.1-2.1.9-.6.7-.8 2.2-.8 2.2S2.2 9 2.2 10.7v1.5c0 1.8.2 3.5.2 3.5s.2 1.5.8 2.2c.8.8 1.9.8 2.4.9C7.4 19 12 19 12 19s3.9 0 6.7-.2c.4-.1 1.3-.1 2.1-.9.6-.7.8-2.2.8-2.2s.2-1.8.2-3.5v-1.5c0-1.7-.2-3.5-.2-3.5z"/><path d="M10 14.5v-5l4.5 2.5z" fill="#FF0000"/></svg></div>
+          <span class="sns-label">유튜브</span>
+        </a>
+        <a href="https://www.instagram.com/greene_dt/" target="_blank" class="sns-item">
+          <div class="sns-icon ig"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="white" stroke="none"/></svg></div>
+          <span class="sns-label">인스타그램</span>
+        </a>
+        <a href="https://blog.naver.com/wg0057" target="_blank" class="sns-item">
+          <div class="sns-icon blog"><span>blog</span></div>
+          <span class="sns-label">네이버블로그</span>
+        </a>
+      </div>
       <div class="home-grid">
         <div class="home-card">
           <div class="home-card-t">자체 생산</div>
@@ -148,6 +183,32 @@
           <button class="home-slider-dot" onclick="homeSliderJump(1)"></button>
           <button class="home-slider-dot" onclick="homeSliderJump(2)"></button>
         </div>
+      </div>
+    </div>
+    <div class="channels-section">
+      <div class="channels-title">Shopping Channels</div>
+      <div class="channels-grid">
+        <a href="https://smartstore.naver.com/wg0057" target="_blank" class="channel-item">
+          <span class="ch-naver">N 스마트스토어</span>
+        </a>
+        <a href="https://shop.coupang.com/A00135010?source=brandstore_sdp_atf&ocid=103196&checkBatchDelivery=true&pid=8844617795&viid=92767929373&platform=p&brandId=0&btcEnableForce=false" target="_blank" class="channel-item">
+          <span class="ch-coupang">coupang</span>
+        </a>
+        <a href="https://world-green.ko.aliexpress.com/store/1103638092" target="_blank" class="channel-item">
+          <span class="ch-ali">AliExpress</span>
+        </a>
+        <a href="https://stores.auction.co.kr/worldgreenmall" target="_blank" class="channel-item">
+          <span class="ch-auction">AUCTION.</span>
+        </a>
+        <a href="https://minishop.gmarket.co.kr/ROTT7021?spm=gmktpc.pdp.0.0.7f7c4910dCO5eN" target="_blank" class="channel-item">
+          <span class="ch-gmarket">G<span style="color:#04a148">market</span></span>
+        </a>
+        <a href="https://shop.11st.co.kr/stores/374185" target="_blank" class="channel-item">
+          <span class="ch-11st">11번가</span>
+        </a>
+        <a href="https://store.kakao.com/worldgreen" target="_blank" class="channel-item">
+          <span class="ch-kakao">카카오톡 쇼핑</span>
+        </a>
       </div>
     </div>
       <div class="home-footer">
