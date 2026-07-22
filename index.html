@@ -75,6 +75,7 @@
   .hero{width:100%; height:auto; display:block; border-radius:14px; margin-bottom:10px; background:#fff;}
   .duo{display:flex; gap:10px; width:100%; margin-bottom:10px;}
   .duo img{width:calc((100% - 10px)/2); height:auto; display:block; border-radius:14px; background:#fff;}
+  .mat-text{padding:14px 6px; margin-bottom:6px; line-height:1.6; color:#222; font-size:15px; white-space:normal; word-break:keep-all;}
   .stage{position:relative; width:100%; max-width:440px; aspect-ratio:1/1; margin:14px auto 0;}
   .stage svg.wires{position:absolute; inset:0; width:100%; height:100%; pointer-events:none;}
   .center{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:29%; aspect-ratio:1/1; border-radius:50%; background:var(--card); border:2px solid var(--red); overflow:hidden; z-index:3;}
@@ -1054,6 +1055,13 @@
         rows.forEach(function(r){
           if(r.section === 'duo'){
             duoBuf.push(r);                 // 반반: 2장씩 묶음
+          } else if(r.section === 'text'){
+            flushDuo();                     // 문자: 셀 서식 그대로 문단 출력
+            var t = r.captionHtml || (r.caption ? escapeHtml(r.caption) : '');
+            if(t){
+              var align = (r.captionAlign === 'center' || r.captionAlign === 'right') ? r.captionAlign : 'left';
+              html += '<div class="mat-text" style="text-align:'+align+'">'+t+'</div>';
+            }
           } else {
             flushDuo();                     // hero(꽉 채움): 전 duo 먼저 배출 후 full-width
             html += '<img class="hero" src="'+escapeHtml(r.image)+'" alt="'+escapeHtml(r.caption||'')+'">';
