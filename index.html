@@ -339,7 +339,44 @@
     </div>
   </section>
   <section class="panel" data-panel="mat">
-    <div class="empty" style="min-height:60vh"><div class="empty-ico">🛠</div><div class="empty-t">매트 준비 중</div><div class="empty-s">콘텐츠가 곧 추가됩니다</div></div>
+    <nav class="subtabs">
+      <button class="subtab on" data-sub="carpet">카펫</button>
+      <button class="subtab" data-sub="coil">코일</button>
+      <button class="subtab" data-sub="antrap">앤트랩</button>
+      <button class="subtab" data-sub="absoba">압소바</button>
+    </nav>
+    <div class="subpanel on" data-sub="carpet">
+      <div class="wrap">
+        <div class="hero-wrap">
+          <img class="hero" src="" alt="카펫 매트" style="display:none">
+        </div>
+        <div class="duo"></div>
+      </div>
+    </div>
+    <div class="subpanel" data-sub="coil">
+      <div class="wrap">
+        <div class="hero-wrap">
+          <img class="hero" src="" alt="코일 매트" style="display:none">
+        </div>
+        <div class="duo"></div>
+      </div>
+    </div>
+    <div class="subpanel" data-sub="antrap">
+      <div class="wrap">
+        <div class="hero-wrap">
+          <img class="hero" src="" alt="앤트랩 매트" style="display:none">
+        </div>
+        <div class="duo"></div>
+      </div>
+    </div>
+    <div class="subpanel" data-sub="absoba">
+      <div class="wrap">
+        <div class="hero-wrap">
+          <img class="hero" src="" alt="압소바 매트" style="display:none">
+        </div>
+        <div class="duo"></div>
+      </div>
+    </div>
   </section>
   <section class="panel" data-panel="pole">
     <nav class="subtabs">
@@ -837,7 +874,7 @@
 
   <script>
     document.querySelectorAll('.tab').forEach(function(t){t.addEventListener('click',function(){var k=t.dataset.tab;document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('on');});document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('on');});t.classList.add('on');document.querySelector('.panel[data-panel="'+k+'"]').classList.add('on');window.scrollTo(0,0);});});
-    document.querySelectorAll('.subtab').forEach(function(t){t.addEventListener('click',function(){var k=t.dataset.sub;document.querySelectorAll('.subtab').forEach(function(x){x.classList.remove('on');});document.querySelectorAll('.subpanel').forEach(function(p){p.classList.remove('on');});t.classList.add('on');document.querySelector('.subpanel[data-sub="'+k+'"]').classList.add('on');window.scrollTo(0,0);});});
+    document.querySelectorAll('.subtab').forEach(function(t){t.addEventListener('click',function(){var k=t.dataset.sub;var sec=t.closest('section');sec.querySelectorAll('.subtab').forEach(function(x){x.classList.remove('on');});sec.querySelectorAll('.subpanel').forEach(function(p){p.classList.remove('on');});t.classList.add('on');sec.querySelector('.subpanel[data-sub="'+k+'"]').classList.add('on');window.scrollTo(0,0);});});
     var zoomOverlay=document.getElementById('zoomOverlay');
     var zoomImg=document.getElementById('zoomImg');
     var zoomLabel=document.getElementById('zoomLabel');
@@ -990,6 +1027,43 @@
       });
     }
 
+    function renderMatContent(items){
+      var byProduct = {};
+      items.forEach(function(row){
+        var p = row.product;
+        if(!p) return;
+        if(!byProduct[p]) byProduct[p] = [];
+        byProduct[p].push(row);
+      });
+      Object.keys(byProduct).forEach(function(product){
+        var wrap = document.querySelector('section[data-panel="mat"] .subpanel[data-sub="'+product+'"] .wrap');
+        if(!wrap) return;
+        // 시트 순서 유지 (order 있으면 그 순서, 없으면 입력 순서)
+        var rows = byProduct[product].slice().sort(function(a,b){ return (Number(a.order)||0) - (Number(b.order)||0); });
+
+        var html = '';
+        var duoBuf = [];
+        function flushDuo(){
+          for(var i=0; i<duoBuf.length; i+=2){
+            html += '<div class="duo">' + duoBuf.slice(i, i+2).map(function(r){
+              return '<img src="'+escapeHtml(r.image)+'" alt="'+escapeHtml(r.caption||'')+'">';
+            }).join('') + '</div>';
+          }
+          duoBuf = [];
+        }
+        rows.forEach(function(r){
+          if(r.section === 'duo'){
+            duoBuf.push(r);                 // 반반: 2장씩 묶음
+          } else {
+            flushDuo();                     // hero(꽉 채움): 전 duo 먼저 배출 후 full-width
+            html += '<img class="hero" src="'+escapeHtml(r.image)+'" alt="'+escapeHtml(r.caption||'')+'">';
+          }
+        });
+        flushDuo();
+        wrap.innerHTML = html;
+      });
+    }
+
     function renderMoldGrid(items){
       var grid = document.querySelector('section[data-panel="mold"] .oil-grid');
       var nav = document.querySelector('.mold-jump');
@@ -1027,6 +1101,7 @@
         Object.keys(byCategory).forEach(function(cat){
           if(cat === 'mold'){ renderMoldGrid(byCategory[cat]); }
           else if(cat === 'pole'){ renderPoleContent(byCategory[cat]); }
+          else if(cat === 'mat'){ renderMatContent(byCategory[cat]); }
           else{ renderProductGrid(cat, byCategory[cat]); }
         });
       }).catch(function(err){
