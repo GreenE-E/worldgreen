@@ -392,7 +392,6 @@
           
         </div>
         <div class="duo"></div>
-        <img class="hero size-guide" src="" alt="사이즈 및 무게 가이드" style="display:none">
         <div class="stage"></div>
       </div>
     </div>
@@ -404,7 +403,6 @@
         </div>
         <div class="duo"></div>
         <div class="duo"></div>
-        <img class="hero size-guide" src="" alt="사이즈 및 무게 가이드" style="display:none">
         <div class="stage"></div>
       </div>
     </div>
@@ -975,23 +973,19 @@
           g[s].sort(function(a,b){ return (Number(a.order)||0) - (Number(b.order)||0); });
         });
 
-        // 메인 히어로 이미지
-        if(g.hero[0]){
-          var heroImg = root.querySelector('.hero-wrap .hero');
-          if(heroImg){ heroImg.src = g.hero[0].image; heroImg.style.display=''; }
-        }
-
-        // 사이즈 및 무게 가이드 이미지
-        if(g.size[0]){
-          var sizeImg = root.querySelector('.size-guide');
-          if(sizeImg){ sizeImg.src = g.size[0].image; sizeImg.style.display=''; }
+        // 메인 히어로 이미지들 - hero로 들어온 건 전부 순서대로 꽉 채워서 표시
+        var heroWrapEl = root.querySelector('.hero-wrap');
+        if(heroWrapEl && g.hero.length){
+          heroWrapEl.innerHTML = g.hero.map(function(row){
+            return '<img class="hero" src="'+escapeHtml(row.image)+'" alt="'+escapeHtml(row.caption||product)+'">';
+          }).join('');
         }
 
         // 반반 사용예시 이미지 - 2개씩 묶어서 .duo 를 필요한 만큼 새로 생성
         var existingDuos = root.querySelectorAll('.duo');
         existingDuos.forEach(function(d){ d.parentNode.removeChild(d); });
         if(g.duo.length){
-          var duoAnchor = root.querySelector('.size-guide') || root.querySelector('.stage');
+          var duoAnchor = root.querySelector('.stage');
           var pairs = [];
           for(var di=0; di<g.duo.length; di+=2){ pairs.push(g.duo.slice(di, di+2)); }
           pairs.forEach(function(pair){
@@ -1112,11 +1106,30 @@
           else if(cat === 'mat'){ renderMatContent(byCategory[cat]); }
           else{ renderProductGrid(cat, byCategory[cat]); }
         });
+        // 홈 뜨고 2초 뒤, 나머지 이미지 백그라운드 미리 로드
+        setTimeout(function(){ preloadImages(data); }, 2000);
       }).catch(function(err){
         console.error('제품 데이터를 불러오지 못했습니다:', err);
       }).finally(function(){
         revealGrids();
       });
+    }
+
+    // 전체 이미지를 뒤에서 미리 받아둠 (탭 눌렀을 때 즉시 표시)
+    function preloadImages(data){
+      var urls = [];
+      var seen = {};
+      data.forEach(function(row){
+        if(row.image && !seen[row.image]){ seen[row.image] = 1; urls.push(row.image); }
+      });
+      var i = 0;
+      function next(){
+        if(i >= urls.length) return;
+        var img = new Image();
+        img.onload = img.onerror = next; // 하나 끝나면 다음 (한꺼번에 안 몰리게)
+        img.src = urls[i++];
+      }
+      next();
     }
     loadProductsFromSheet();
   </script>
