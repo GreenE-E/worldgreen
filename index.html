@@ -961,53 +961,59 @@
       items.forEach(function(row){
         var p = row.product;
         if(!p) return;
-        if(!byProduct[p]) byProduct[p] = {hero:[], duo:[], center:[], stage:[], size:[]};
-        var sec = row.section;
-        if(byProduct[p][sec]) byProduct[p][sec].push(row);
+        if(!byProduct[p]) byProduct[p] = [];
+        byProduct[p].push(row);
       });
       Object.keys(byProduct).forEach(function(product){
         var root = document.querySelector('.subpanel[data-sub="'+product+'"]');
         if(!root) return;
-        var g = byProduct[product];
-        ['hero','duo','center','stage','size'].forEach(function(s){
-          g[s].sort(function(a,b){ return (Number(a.order)||0) - (Number(b.order)||0); });
-        });
+        var rows = byProduct[product].slice().sort(function(a,b){ return (Number(a.order)||0) - (Number(b.order)||0); });
 
-        // 메인 히어로 이미지들 - hero로 들어온 건 전부 순서대로 꽉 채워서 표시
         var heroWrapEl = root.querySelector('.hero-wrap');
-        if(heroWrapEl && g.hero.length){
-          heroWrapEl.innerHTML = g.hero.map(function(row){
-            return '<img class="hero" src="'+escapeHtml(row.image)+'" alt="'+escapeHtml(row.caption||product)+'">';
-          }).join('');
+        var stageEl = root.querySelector('.stage');
+
+        // 기존에 별도로 붙어있던 duo(구조 밖) 제거 - 이제 hero-wrap 안에서 순서대로 그림
+        root.querySelectorAll('.duo').forEach(function(d){ d.parentNode.removeChild(d); });
+
+        var seqHtml = '';
+        var duoBuf = [];
+        var centerRow = null;
+        var stageRows = [];
+
+        function flushDuo(){
+          for(var i=0; i<duoBuf.length; i+=2){
+            seqHtml += '<div class="duo">' + duoBuf.slice(i, i+2).map(function(r){
+              var label = r.caption || r.part || '';
+              return '<img src="'+escapeHtml(r.image)+'" alt="'+escapeHtml(label)+'">';
+            }).join('') + '</div>';
+          }
+          duoBuf = [];
         }
 
-        // 반반 사용예시 이미지 - 2개씩 묶어서 .duo 를 필요한 만큼 새로 생성
-        var existingDuos = root.querySelectorAll('.duo');
-        existingDuos.forEach(function(d){ d.parentNode.removeChild(d); });
-        if(g.duo.length){
-          var duoAnchor = root.querySelector('.stage');
-          var pairs = [];
-          for(var di=0; di<g.duo.length; di+=2){ pairs.push(g.duo.slice(di, di+2)); }
-          pairs.forEach(function(pair){
-            var div = document.createElement('div');
-            div.className = 'duo';
-            div.innerHTML = pair.map(function(row){
-              var label = row.caption || row.part || '';
-              return '<img src="'+escapeHtml(row.image)+'" alt="'+escapeHtml(label)+'">';
-            }).join('');
-            duoAnchor.parentNode.insertBefore(div, duoAnchor);
-          });
-        }
+        rows.forEach(function(r){
+          if(r.section === 'hero'){
+            flushDuo();                     // hero 전 duo 먼저 배출, 순서 유지
+            seqHtml += '<img class="hero" src="'+escapeHtml(r.image)+'" alt="'+escapeHtml(r.caption||product)+'">';
+          } else if(r.section === 'duo'){
+            duoBuf.push(r);                 // 반반: 2장씩 묶음
+          } else if(r.section === 'center'){
+            centerRow = r;                  // 원형 중앙 - 다이어그램용, 순서와 무관
+          } else if(r.section === 'stage'){
+            stageRows.push(r);              // 부속품 - 다이어그램용, 순서와 무관
+          }
+        });
+        flushDuo();
+
+        if(heroWrapEl){ heroWrapEl.innerHTML = seqHtml; }
 
         // 원형 다이어그램 (중앙 허브 + 부속품) - 개수에 맞춰 위치 자동 계산
-        var stageEl = root.querySelector('.stage');
-        if(stageEl && g.stage.length){
-          var n = g.stage.length;
-          var centerSrc = g.center[0] ? g.center[0].image : '';
+        if(stageEl && stageRows.length){
+          var n = stageRows.length;
+          var centerSrc = centerRow ? centerRow.image : '';
           var centerHtml = '<div class="center"><img src="'+escapeHtml(centerSrc)+'" alt="폴대"></div>';
           var wiresHtml = '<svg class="wires" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">';
           var partsHtml = '';
-          g.stage.forEach(function(row, i){
+          stageRows.forEach(function(row, i){
             var pos = stagePosition(i, n, 90);
             var label = row.caption || row.part || '';
             wiresHtml += '<line x1="50" y1="50" x2="'+pos.left.toFixed(2)+'" y2="'+pos.top.toFixed(2)+'" stroke="#e23b3b" stroke-width="0.5" stroke-opacity="0.55"/>';
